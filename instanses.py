@@ -269,6 +269,7 @@ class UserInstance:
 
     def get_pirate(self):
         if self.db_user and self.has_profile:
+            start_search(self.chat_id)
 
             Session = sessionmaker(bind=engine)
             session = Session()
@@ -276,7 +277,7 @@ class UserInstance:
             random_user = session.query(User).filter(User.has_profile == True, ~User.id.in_(self.seen_pirates)) \
                 .order_by(func.random()).first()
             if random_user:
-                start_search(self.chat_id)
+
                 pirate_show(self.chat_id, random_user)
                 self.seen_pirates.append(random_user.id)
                 self.last_match = random_user
