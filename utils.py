@@ -13,4 +13,5 @@ def get_user_processor(data):
         user_processors[iid] = UserInstance(iid, uid, chat_id)
         return user_processors[iid]
     else:
+        user_processors[iid].set_chat_id(chat_id)
         return user_processors[iid]

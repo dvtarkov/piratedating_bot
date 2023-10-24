@@ -138,3 +138,13 @@ def profile_show(chat_id, src_file):
     files = {'photo': open(src_file, 'rb')}
     data = {"chat_id": chat_id, "caption": text, "parse_mode": "Markdown"}
     send_message(method, data=data, files=files)
+
+
+def profile_delete(chat_id):
+    method = "sendPhoto"
+    text = "Мы успешно удалили ваш профиль! Но вы можете сделать новый по команде /setprofile" \
+           "\n Введите команду /find"
+    files = {'photo': open("imgs/delete.jpg", 'rb')}
+    data = {"chat_id": chat_id, "caption": text, "parse_mode": "Markdown"}
+    send_message(method, data=data, files=files)
+

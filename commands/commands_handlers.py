@@ -44,6 +44,11 @@ def handle_view_profile(data):
     processor.view_profile()
 
 
+def handle_delete(data):
+    processor = get_user_processor(data)
+    processor.view_profile()
+
+
 commands = {
     "/help": handle_help,
     "/start": handle_start,
@@ -53,4 +58,5 @@ commands = {
     "/sendcontact": handle_match,
     "/cancel": handle_cancel,
     "/viewprofile": handle_view_profile,
+    "/deleteprofile": handle_delete,
 }

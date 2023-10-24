@@ -9,7 +9,8 @@ from messages.pirate_find.pirate_find import pirate_show, too_match, shuffle, st
     contacts_sent
 from messages.profile_set.profile_set_msgs import p_start_message, side_photo_message, name_message, info_message, \
     detail_message, char_message, status_message, name_except_message, info_exception_message, detail_exception_message, \
-    status_exception_message, end_profile_flow, photo_exception, cancel_msg, cannot_cancel_msg, profile_show
+    status_exception_message, end_profile_flow, photo_exception, cancel_msg, cannot_cancel_msg, profile_show, \
+    profile_delete
 from models.db import User, engine
 from photo_maker.add_text.add_text import add_text
 from photo_maker.make_photo.make_photo import make_photo, stack_photo
@@ -305,6 +306,20 @@ class UserInstance:
     def view_profile(self):
         if self.db_user and self.has_profile:
             profile_show(self.chat_id, self.db_user.profile_picture)
+        else:
+            profile_error(self.chat_id)
+
+    def set_chat_id(self, chat_id):
+        self.chat_id = chat_id
+
+    def delete_profile(self):
+        if self.db_user and self.has_profile:
+            if os.path.exists(self.db_user.profile_picture):
+                os.remove(self.db_user.profile_picture)
+            self.db_user.profile_picture = ""
+            self.db_user.has_profile = False
+            self.has_profile = False
+            profile_delete(self.chat_id)
         else:
             profile_error(self.chat_id)
 
