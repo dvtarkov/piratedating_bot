@@ -134,7 +134,7 @@ def p_cancel(chat_id):
 def profile_show(chat_id, src_file):
     method = "sendPhoto"
     text = "Ваш профиль был создан! Начните искать других пиратов прямо сейчас!" \
-           "\n Введите команду /find"
+           "\nВведите команду /find"
     files = {'photo': open(src_file, 'rb')}
     data = {"chat_id": chat_id, "caption": text, "parse_mode": "Markdown"}
     send_message(method, data=data, files=files)
@@ -142,8 +142,7 @@ def profile_show(chat_id, src_file):
 
 def profile_delete(chat_id):
     method = "sendPhoto"
-    text = "Мы успешно удалили ваш профиль! Но вы можете сделать новый по команде /setprofile" \
-           "\n Введите команду /find"
+    text = "Мы успешно удалили ваш профиль! Но вы можете сделать новый по команде /setprofile"
     files = {'photo': open("imgs/delete.jpg", 'rb')}
     data = {"chat_id": chat_id, "caption": text, "parse_mode": "Markdown"}
     send_message(method, data=data, files=files)

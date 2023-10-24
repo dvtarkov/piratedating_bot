@@ -79,8 +79,7 @@ class UserInstance:
         user = session.query(User).filter_by(id=self.id).first()
         session.commit()
         if user:
-            self.db_user = user
-            self.has_profile = self.db_user.has_profile
+            self.has_profile = user.has_profile
         session.close()
 
     async def start_action(self, data):
@@ -235,14 +234,14 @@ class UserInstance:
 
                 Session = sessionmaker(bind=engine)
                 session = Session()
+                user = session.query(User).filter_by(id=self.id).first()
 
-                if not self.db_user:
+                if not user:
                     new_user = User(id=self.id, username=self.uid, profile_picture=self.image_with_bg,
                                     chat_id=self.chat_id, has_profile=True)
                     session.add(new_user)
-                    self.db_user = new_user
                 else:
-                    self.db_user.profile_picture = self.image_with_bg
+                    user.profile_picture = self.image_with_bg
                 session.commit()
                 session.close()
                 self.has_profile = True
@@ -269,11 +268,12 @@ class UserInstance:
             cannot_cancel_msg(self.chat_id)
 
     def get_pirate(self):
-        if self.db_user and self.has_profile:
-            start_search(self.chat_id)
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        user = session.query(User).filter_by(id=self.id).first()
 
-            Session = sessionmaker(bind=engine)
-            session = Session()
+        if user and self.has_profile:
+            start_search(self.chat_id)
 
             random_user = session.query(User).filter(User.has_profile == True, ~User.id.in_(self.seen_pirates)) \
                 .order_by(func.random()).first()
@@ -281,31 +281,43 @@ class UserInstance:
 
                 pirate_show(self.chat_id, random_user)
                 self.seen_pirates.append(random_user.id)
-                self.last_match = random_user
+                self.last_match = random_user.id
             else:
                 too_match(self.chat_id)
         else:
             profile_error(self.chat_id)
 
     def shuffle(self):
-        if self.db_user and self.has_profile:
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        user = session.query(User).filter_by(id=self.id).first()
+
+        if user and self.has_profile:
             self.seen_pirates = [self.id]
             shuffle(self.chat_id)
         else:
             profile_error(self.chat_id)
 
     def match(self):
-        if self.db_user and self.has_profile:
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        user = session.query(User).filter_by(id=self.id).first()
+        match_user = session.query(User).filter_by(id=self.last_match).first()
+
+        if user and self.has_profile:
             if self.last_match:
-                u_chat = self.last_match.chat_id
-                match_msg(u_chat, self.db_user.username, self.db_user.profile_picture)
+                u_chat = match_user.chat_id
+                match_msg(u_chat, user.username, user.profile_picture)
                 contacts_sent(self.chat_id)
         else:
             profile_error(self.chat_id)
 
     def view_profile(self):
-        if self.db_user and self.has_profile:
-            profile_show(self.chat_id, self.db_user.profile_picture)
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        user = session.query(User).filter_by(id=self.id).first()
+        if user and self.has_profile:
+            profile_show(self.chat_id, user.profile_picture)
         else:
             profile_error(self.chat_id)
 
@@ -313,11 +325,15 @@ class UserInstance:
         self.chat_id = chat_id
 
     def delete_profile(self):
-        if self.db_user and self.has_profile:
-            if os.path.exists(self.db_user.profile_picture):
-                os.remove(self.db_user.profile_picture)
-            self.db_user.profile_picture = ""
-            self.db_user.has_profile = False
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        user = session.query(User).filter_by(id=self.id).first()
+
+        if user and self.has_profile:
+            if os.path.exists(user.profile_picture):
+                os.remove(user.profile_picture)
+            user.profile_picture = ""
+            user.has_profile = False
             self.has_profile = False
             profile_delete(self.chat_id)
         else:

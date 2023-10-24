@@ -46,7 +46,7 @@ def handle_view_profile(data):
 
 def handle_delete(data):
     processor = get_user_processor(data)
-    processor.view_profile()
+    processor.delete_profile()
 
 
 commands = {
