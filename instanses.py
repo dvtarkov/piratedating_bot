@@ -304,7 +304,7 @@ class UserInstance:
 
     def view_profile(self):
         if self.db_user and self.has_profile:
-            profile_show(self.chat_id, self.image_with_bg)
+            profile_show(self.chat_id, self.db_user.profile_picture)
         else:
             profile_error(self.chat_id)
 
