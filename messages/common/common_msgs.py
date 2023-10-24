@@ -20,6 +20,7 @@ def help_message(chat_id):
            "*Только после создания профиля:*\n" \
            "/viewprofile - посмотреть свой профиль.\n" \
            "/find - найти пирата.\n" \
-           "/shuffle - начать поиск заново."
+           "/shuffle - начать поиск заново.\n" \
+           "/deleteprofile - чтобы удалить профиль."
     data = {"chat_id": chat_id, "text": text, "parse_mode": "Markdown"}
     send_message(method, data=data)
