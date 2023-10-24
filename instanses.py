@@ -72,6 +72,7 @@ class UserInstance:
         self.chat_id = chat_id
         self.seen_pirates = [self.id]
 
+        self.has_profile = False
         Session = sessionmaker(bind=engine)
         session = Session()
         user = session.query(User).filter_by(id=self.id).first()
@@ -243,7 +244,7 @@ class UserInstance:
                     self.db_user.profile_picture = self.image_with_bg
                 session.commit()
                 session.close()
-
+                self.has_profile = True
                 end_profile_flow(self.chat_id, self.image_with_bg)
 
                 self.end_flow()
@@ -285,14 +286,14 @@ class UserInstance:
             profile_error(self.chat_id)
 
     def shuffle(self):
-        if self.db_user and self.db_user.has_profile:
+        if self.db_user and self.has_profile:
             self.seen_pirates = [self.id]
             shuffle(self.chat_id)
         else:
             profile_error(self.chat_id)
 
     def match(self):
-        if self.db_user and self.db_user.has_profile:
+        if self.db_user and self.has_profile:
             if self.last_match:
                 u_chat = self.last_match.chat_id
                 match_msg(u_chat, self.db_user.username, self.db_user.profile_picture)
@@ -301,8 +302,8 @@ class UserInstance:
             profile_error(self.chat_id)
 
     def view_profile(self):
-        if self.db_user and self.db_user.has_profile:
-            profile_show(self.db_user.chat_id, self.db_user.profile_picture)
+        if self.db_user and self.has_profile:
+            profile_show(self.chat_id, self.image_with_bg)
         else:
             profile_error(self.chat_id)
 
