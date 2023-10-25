@@ -272,20 +272,37 @@ class UserInstance:
         session = Session()
         user = session.query(User).filter_by(id=self.id).first()
 
-        if user and self.has_profile:
-            start_search(self.chat_id)
+        start_search(self.chat_id)
 
+        if user and self.has_profile:
+                self.get_pirate_util(session)
+                # random_user = session.query(User).filter(User.has_profile == True, ~User.id.in_(self.seen_pirates)) \
+                #     .order_by(func.random()).first()
+                # if random_user:
+                #     self.seen_pirates.append(random_user.id)
+                #
+                #     pirate_show(self.chat_id, random_user)
+                #
+                #     self.last_match = random_user.id
+                # else:
+                #     too_match(self.chat_id)
+        else:
+            profile_error(self.chat_id)
+
+    def get_pirate_util(self, session):
+        try:
             random_user = session.query(User).filter(User.has_profile == True, ~User.id.in_(self.seen_pirates)) \
                 .order_by(func.random()).first()
             if random_user:
+                self.seen_pirates.append(random_user.id)
 
                 pirate_show(self.chat_id, random_user)
-                self.seen_pirates.append(random_user.id)
+
                 self.last_match = random_user.id
             else:
                 too_match(self.chat_id)
-        else:
-            profile_error(self.chat_id)
+        except:
+            self.get_pirate_util(session)
 
     def shuffle(self):
         Session = sessionmaker(bind=engine)
